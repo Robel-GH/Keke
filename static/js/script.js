@@ -455,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inizializzazione
     loadInitialData();
+    
     GameVisualization.preloadSprites().then(() => {
         console.log("Sprite caricati, pronto per disegnare mappe.");
         // Pulisce il canvas o mostra un messaggio di default
