@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Statistics Visualizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1, h2 { color: #333; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; }
+    #fileInput { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Agent Statistics Visualizer</h1>
+  <input type="file" id="fileInput" accept="application/json">
+
+  <div id="summary"></div>
+  <h2>Levels Details</h2>
+  <table id="levelsTable">
+    <thead>
+      <tr>
+        <th>Level ID</th>
+        <th>Status</th>
+        <th>Won Level</th>
+        <th>Time (s)</th>
+        <th>Iterations</th>
+        <th>Solution Length</th>
+        <th>Efficiency Score</th>
+        <th>Solution</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          renderData(data);
+        } catch (err) {
+          alert('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function renderData(data) {
+      displaySummary(data);
+      populateLevelsTable(data);
+    }
+
+    function displaySummary(data) {
+      const summary = data.summary;
+      const summaryDiv = document.getElementById('summary');
+      summaryDiv.innerHTML = `
+        <h2>Summary</h2>
+        <ul>
+          <li><strong>Agent:</strong> ${data.agent}</li>
+          <li><strong>Level Set:</strong> ${data.level_set}</li>
+          <li><strong>Total Levels:</strong> ${summary.total_levels}</li>
+          <li><strong>Solved Levels:</strong> ${summary.solved_levels}</li>
+          <li><strong>Accuracy:</strong> ${summary.accuracy}</li>
+          <li><strong>Average Time:</strong> ${summary.average_time.toFixed(3)}s</li>
+          <li><strong>Average Iterations:</strong> ${summary.average_iterations}</li>
+          <li><strong>Average Efficiency:</strong> ${summary.average_efficiency.toFixed(2)}</li>
+          <li><strong>Average Solution Length:</strong> ${summary.average_solution_length}</li>
+        </ul>
+      `;
+    }
+
+    function populateLevelsTable(data) {
+      const tbody = document.querySelector('#levelsTable tbody');
+      tbody.innerHTML = ''; // Clear previous content
+
+      data.levels.forEach(level => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${level.level_id}</td>
+          <td>${level.status}</td>
+          <td>${level.won_level}</td>
+          <td>${level.time_seconds.toFixed(3)}</td>
+          <td>${level.iterations}</td>
+          <td>${level.solution_length}</td>
+          <td>${level.efficiency_score.toFixed(3)}</td>
+          <td><pre>${level.solution.join(', ')}</pre></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
