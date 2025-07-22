@@ -273,6 +273,43 @@ class Execution:
         # Verifica finale dopo l'applicazione completa
         return check_win(game_state)
     
+    def _save_detailed_results(self, report):
+        agent = report['agent']
+        level_set = report['level_set']
+        summary = report['summary']
+        
+        output_dir = os.path.join(os.path.dirname(__file__), 'results', 'detailed')
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_file = os.path.join(output_dir, f"{agent}_{level_set}_detailed_results.json")
+
+        detailed_data = {
+            'agent': agent,
+            'level_set': level_set,
+            'summary': summary,
+            'levels': []
+        }
+
+        for level in report['levels']:
+            level_data = {
+                'level_id': level.get('id'),
+                'status': level.get('status'),
+                'won_level': level.get('won_level'),
+                'time_seconds': level.get('time'),
+                'iterations': level.get('iterations'),
+                'solution_length': level.get('solution_length'),
+                'efficiency_score': level.get('efficiency_score'),
+                'solution': level.get('solution'),
+            }
+            detailed_data['levels'].append(level_data)
+
+        with open(output_file, 'w') as f:
+            json.dump(detailed_data, f, indent=2)
+
+        print(f"[DEBUG] Dettagli salvati in: {output_file}")
+
+
+
     def run_all_levels(self, callback=None):
         """
         Esegue l'agente su tutti i livelli caricati.
@@ -391,6 +428,7 @@ class Execution:
         # Salva i risultati nella cache se use_cache è True
         if self.use_cache:
             self._save_results_to_cache(final_report)
+        self._save_detailed_results(final_report)
         
         return final_report
     
