@@ -286,7 +286,7 @@ When contributing to KekeAI:
 
 ## License
 
-This project is designed for educational and research purposes in artificial intelligence and game-solving algorithms.
+This project is licensed under the MIT License  see - LICENSE
 
 ## Acknowledgments
 
